@@ -1,0 +1,87 @@
+#score {
+  text-align: center;
+  font-size: 24px;
+  margin-top: 10px;
+  font-family: Arial, sans-serif;
+  color: rgb(215, 41, 227);
+}
+
+#game {
+  width: 600px;
+  height: 300px;
+  border: 2px solid black;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  background-image: url("https://raw.githubusercontent.com/kriscfoster/chrome-dino-game/master/background.jpg");
+  background-size: cover;
+  background-position: center;
+  outline: none; /* damit der Fokus-Rahmen nicht stört */
+}
+
+#dino {
+  height: 75px;
+  width: 75px;
+  position: absolute;
+  left: 40px;
+  top: 225px;
+  background-image: url("https://raw.githubusercontent.com/kriscfoster/chrome-dino-game/master/dino.png");
+  background-size: cover;
+  background-position: center;
+}
+
+#rock {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 250px;
+  left: 600px;
+  background-image: url("https://raw.githubusercontent.com/kriscfoster/chrome-dino-game/master/rock.png");
+  background-size: cover;
+  background-position: center;
+  animation: rockMove 2.6s infinite linear;
+}
+
+@keyframes rockMove {
+  0% { left: 600px; }
+  100% { left: -60px; }
+}
+
+/* Dino länger in der Luft */
+.jump-animation {
+  animation: jump 0.75s ease-out;
+}
+
+@keyframes jump {
+  0%   { top: 225px; }
+  45%  { top: 90px; }
+  75%  { top: 90px; }
+  100% { top: 225px; }
+}
+
+/* Game Over Overlay */
+#gameOver {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+#gameOver .title {
+  font-size: 40px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+#gameOver .subtitle {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+.hidden {
+  display: none !important;
+}

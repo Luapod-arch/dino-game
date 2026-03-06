@@ -1,100 +1,139 @@
 window.addEventListener("load", () => {
-  const game = document.getElementById("game");
-  const dino = document.getElementById("dino");
-  const rock = document.getElementById("rock");
-  const scoreEl = document.getElementById("score");
-  const gameOverEl = document.getElementById("gameOver");
 
-  let points = 0;
-  let gameOver = false;
+const game = document.getElementById("game");
+const character = document.getElementById("character");
+const obstacle = document.getElementById("obstacle");
+const scoreEl = document.getElementById("score");
+const gameOverEl = document.getElementById("gameOver");
+const startButton = document.getElementById("startButton");
 
-  // Score starten
-  scoreEl.innerText = points;
+let points = 0;
+let gameOver = false;
+let gameRunning = false;
 
+scoreEl.innerText = "Score: 0";
 
-  game.focus();
+/* Hindernis am Anfang stoppen */
+obstacle.style.animation = "none";
 
-  function jump() {
-    if (gameOver) return;
-    if (dino.classList.contains("jump-animation")) return;
+game.focus();
 
-    dino.classList.add("jump-animation");
-    setTimeout(() => dino.classList.remove("jump-animation"), 750); // muss zur CSS jump Dauer passen
-  }
+/* Springen */
 
-  function restart() {
-    gameOver = false;
-    points = 0;
-    scoreEl.innerText = points;
+function jump(){
 
-    // Rock Animation neu starten
-    rock.style.animation = "none";
-    void rock.offsetWidth; // reflow
-    rock.style.animation = "rockMove 2.6s infinite linear";
-    rock.style.left = "600px";
+if(!gameRunning || gameOver) return;
 
-    // Dino reset
-    dino.classList.remove("jump-animation");
-    dino.style.top = "225px";
+if(character.classList.contains("jump-animation")) return;
 
-    // Overlay ausblenden
-    gameOverEl.classList.add("hidden");
+character.classList.add("jump-animation");
 
-    // Fokus wieder setzen
-    game.focus();
-  }
+setTimeout(()=>{
+character.classList.remove("jump-animation");
+},900);
 
-  function handleKeyDown(e) {
-    // Neustart
-    if (e.code === "KeyR" && gameOver) {
-      e.preventDefault();
-      restart();
-      return;
-    }
+}
 
-    // Springen (Space / ArrowUp / W)
-    if (e.code === "Space" || e.code === "ArrowUp" || e.code === "KeyW") {
-      e.preventDefault();
-      jump();
-    }
-  }
+/* Spiel starten */
 
-  // Keydown direkt auf game (zuverlässig mit tabindex + focus)
-  game.addEventListener("keydown", handleKeyDown);
+function startGame(){
 
-  // Klick: Fokus zurückholen + springen
-  game.addEventListener("click", () => {
-    game.focus();
-    jump();
-  });
+console.log("Start Button wurde geklickt");
 
-  // Touch
-  game.addEventListener("touchstart", () => {
-    game.focus();
-    jump();
-  });
+gameRunning = true;
+gameOver = false;
+points = 0;
 
-  // Game Loop (ruhiger)
-  setInterval(() => {
-    if (gameOver) return;
+scoreEl.innerText = "Score: 0";
 
-    const dinoTop = parseInt(getComputedStyle(dino).getPropertyValue("top"));
-    const rockLeft = parseInt(getComputedStyle(rock).getPropertyValue("left"));
+character.classList.remove("jump-animation");
+character.classList.remove("crash-animation");
+character.style.bottom = "40px";
 
-    // Score (wenn du doppelt so schnell willst: points += 2)
-    points += 1;
-    scoreEl.innerText = points;
+obstacle.style.animation = "none";
+void obstacle.offsetWidth;
+obstacle.style.animation = "obstacleMove 3s infinite linear";
 
-    // Kollision
-    if (rockLeft < 90 && rockLeft > 20 && dinoTop > 165) {
-      gameOver = true;
+gameOverEl.classList.add("hidden");
 
-      // Rock stoppen
-      rock.style.animation = "none";
-      rock.style.left = rockLeft + "px";
+startButton.classList.add("hidden");
 
-      // Overlay zeigen
-      gameOverEl.classList.remove("hidden");
-    }
-  }, 100);
+game.focus();
+
+}
+
+/* Spiel beenden */
+
+function endGame(){
+
+gameOver = true;
+gameRunning = false;
+
+obstacle.style.animation = "none";
+
+/* Kollision Animation starten */
+character.classList.add("crash-animation");
+
+gameOverEl.classList.remove("hidden");
+
+startButton.innerText = "Neu starten";
+startButton.classList.remove("hidden");
+
+}
+
+/* Tastatur Steuerung */
+
+function handleKeyDown(event){
+
+if(event.code === "KeyR" && gameOver){
+event.preventDefault();
+startGame();
+return;
+}
+
+if(event.code === "Space" || event.code === "ArrowUp" || event.code === "KeyW"){
+event.preventDefault();
+jump();
+}
+
+}
+
+/* Event Handler */
+
+startButton.addEventListener("click", startGame);
+
+game.addEventListener("keydown", handleKeyDown);
+
+game.addEventListener("click", ()=>{
+game.focus();
+jump();
+});
+
+/* Game Loop */
+
+setInterval(()=>{
+
+if(!gameRunning || gameOver) return;
+
+const characterBottom = parseInt(
+getComputedStyle(character).getPropertyValue("bottom")
+);
+
+const obstacleRight = parseInt(
+getComputedStyle(obstacle).getPropertyValue("right")
+);
+
+points += 1;
+scoreEl.innerText = "Score: " + points;
+
+/* Kollisionsprüfung */
+
+if(obstacleRight > game.offsetWidth-200 && characterBottom < 120){
+
+endGame();
+
+}
+
+},100);
+
 });

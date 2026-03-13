@@ -19,6 +19,7 @@ obstacle.style.animation = "none";
 game.focus();
 
 /* Springen */
+/* Test */
 
 function jump(){
 
